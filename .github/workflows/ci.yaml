@@ -1,0 +1,11 @@
+name: CI
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  node-test:
+    name: Test & QA
+    uses: curium-rocks/flows/.github/workflows/npm-lint-and-validate.yml@main
