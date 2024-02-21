@@ -1,7 +1,7 @@
 const createServer = require('./server')
 const { describe, it } = require('node:test')
 const net = require('net')
-const webSock = require('ws')
+const { WebSocket, WebSocketServer } = require('ws')
 const assert = require('assert')
 const request = require('supertest')
 
@@ -33,53 +33,58 @@ describe('Server', () => {
     assert.equal(res.body.message, 'Invalid subdomain. Subdomains must be lowercase and between 4 and 63 alphanumeric characters.')
   })
 
-  it('should upgrade websocket requests', async () => {
+  it('should upgrade websocket requests', {
+    timeout: 5000
+  }, async () => {
     const hostname = 'websocket-test'
     const server = createServer({
       domain: 'example.com'
     })
-    await new Promise(resolve => server.listen(resolve))
+    try {
+      await new Promise(resolve => server.listen(resolve))
 
-    const res = await request(server).get('/websocket-test')
-    const localTunnelPort = res.body.port
+      const res = await request(server).get('/websocket-test')
+      const localTunnelPort = res.body.port
 
-    const wss = await new Promise((resolve) => {
-      const wsServer = new webSock.Server({ port: 0 }, () => {
-        resolve(wsServer)
+      const wss = await new Promise((resolve) => {
+        const wsServer = new WebSocketServer({ port: 0 }, () => {
+          resolve(wsServer)
+        })
       })
-    })
 
-    const websocketServerPort = wss.address().port
+      const websocketServerPort = wss.address().port
 
-    const ltSocket = net.createConnection({ port: localTunnelPort })
-    const wsSocket = net.createConnection({ port: websocketServerPort })
-    ltSocket.pipe(wsSocket).pipe(ltSocket)
+      const ltSocket = net.createConnection({ port: localTunnelPort })
+      const wsSocket = net.createConnection({ port: websocketServerPort })
+      ltSocket.pipe(wsSocket).pipe(ltSocket)
 
-    wss.once('connection', (ws) => {
-      ws.once('message', (message) => {
-        ws.send(message)
+      wss.once('connection', (ws) => {
+        ws.once('message', (message) => {
+          ws.send(message)
+        })
       })
-    })
 
-    const ws = new webSock.WebSocket('http://localhost:' + server.address().port, {
-      headers: {
-        host: hostname + '.example.com'
-      }
-    })
-
-    ws.on('open', () => {
-      ws.send('something')
-    })
-
-    await new Promise((resolve) => {
-      ws.once('message', (msg) => {
-        assert.equal(msg, 'something')
-        resolve()
+      const ws = new WebSocket('http://localhost:' + server.address().port, {
+        headers: {
+          host: hostname + '.example.com'
+        }
       })
-    })
 
-    wss.close()
-    await new Promise(resolve => server.close(resolve))
+      ws.on('open', () => {
+        ws.send('something')
+      })
+
+      await new Promise((resolve) => {
+        ws.once('message', (msg) => {
+          assert.equal(msg, 'something')
+          ws.close()
+          resolve()
+        })
+      })
+      wss?.close()
+    } finally {
+      await new Promise(resolve => server.close(resolve))
+    }
   })
 
   it('should support the /api/tunnels/:id/status endpoint', async () => {
