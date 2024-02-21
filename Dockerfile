@@ -1,13 +1,29 @@
-FROM node:10.1.0-alpine
+FROM node:lts-alpine as build-base
+RUN apk add --update --no-cache \
+  python3 \
+  make \
+  g++ \
+  bash \
+  gcc
 
-WORKDIR /app
+FROM build-base AS build
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build --if-present
 
-COPY package.json /app/
-COPY yarn.lock /app/
+FROM build-base AS libraries
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm ci --omit-dev
 
-RUN yarn install --production && yarn cache clean
-
-COPY . /app
-
+FROM node:lts-alpine
+RUN apk add --update --no-cache dumb-init
 ENV NODE_ENV production
-ENTRYPOINT ["node", "-r", "esm", "./bin/server"]
+USER node
+WORKDIR /usr/src/app
+COPY --chown=node:node --from=libraries /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --chown=node:node --from=build /usr/src/app/ /usr/src/app/
+EXPOSE 3000
+CMD ["dumb-init", "node", "server.js"]

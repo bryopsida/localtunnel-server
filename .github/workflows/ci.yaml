@@ -11,3 +11,18 @@ jobs:
     uses: curium-rocks/flows/.github/workflows/npm-lint-and-validate.yml@main
     with:
       continue-on-prod-vulns: true
+  build-image:
+    name: Image
+    permissions:
+      packages: write
+      security-events: write
+      id-token: write
+      contents: read
+    needs:
+      - node-test
+    uses: curium-rocks/flows/.github/workflows/oci-build-image.yml@main
+    with:
+      codeql_enabled: true
+      image_name: localtunnel-server
+      registry: 'ghcr.io/bryopsida'
+      push_in_pr: true
