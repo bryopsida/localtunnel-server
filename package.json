@@ -1,12 +1,11 @@
 {
-  "author": "Roman Shtylman <shtylman@gmail.com>",
-  "name": "localtunnel-server",
-  "description": "expose localhost to the world",
-  "version": "1.0.0",
+  "name": "@bryopsida/localtunnel-server",
+  "description": "Server for relaying to local tunnels",
+  "version": "0.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/localtunnel/server.git"
+    "url": "git://github.com/bryopsida/localtunnel-server.git"
   },
   "dependencies": {
     "commander": "12.0.0",
