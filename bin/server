@@ -1,68 +1,46 @@
 #!/usr/bin/env node
+require('dotenv')
+const {program} = require('commander')
+const {createLogger} = require('../lib/Logger')
+const createServer = require('../server')
 
-// import 'localenv';
-// import optimist from 'optimist';
+const logOpts = {
+    name: 'localtunnel'
+}
 
-// import log from 'book';
-// import Debug from 'debug';
+const log = createLogger(logOpts)
 
-// import CreateServer from '../server';
 
-// const debug = Debug('localtunnel');
+const argv = program
+    .option('-p, --port <num>', 'listen on this port for outside requests', '3000')
+    .option('-s, --secure', 'use this flag to indicate proxy over https', false)
+    .option('-a, --address <ip>', 'IP address to bind to', '0.0.0.0')
+    .option('-d, --domain <domain>', 'Specify the base domain name. This is optional if hosting localtunnel from a regular example.com domain. This is required if hosting a localtunnel server from a subdomain (i.e. lt.example.dom where clients will be client-app.lt.example.come)')
+    .option('--max-sockets <num>', 'maximum number of tcp sockets each client is allowed to establish at one time (the tunnels)', '10')
+    .parse(process.argv).opts();
 
-// const argv = optimist
-//     .usage('Usage: $0 --port [num]')
-//     .options('secure', {
-//         default: false,
-//         describe: 'use this flag to indicate proxy over https'
-//     })
-//     .options('port', {
-//         default: '80',
-//         describe: 'listen on this port for outside requests'
-//     })
-//     .options('address', {
-//         default: '0.0.0.0',
-//         describe: 'IP address to bind to'
-//     })
-//     .options('domain', {
-//         describe: 'Specify the base domain name. This is optional if hosting localtunnel from a regular example.com domain. This is required if hosting a localtunnel server from a subdomain (i.e. lt.example.dom where clients will be client-app.lt.example.come)',
-//     })
-//     .options('max-sockets', {
-//         default: 10,
-//         describe: 'maximum number of tcp sockets each client is allowed to establish at one time (the tunnels)'
-//     })
-//     .argv;
+const server = createServer({
+    max_tcp_sockets: argv['max-sockets'],
+    secure: argv.secure,
+    domain: argv.domain,
+});
 
-// if (argv.help) {
-//     optimist.showHelp();
-//     process.exit();
-// }
+server.listen(argv.port, argv.address, () => {
+    log.info('server listening on port: %d', server.address().port);
+});
 
-// const server = CreateServer({
-//     max_tcp_sockets: argv['max-sockets'],
-//     secure: argv.secure,
-//     domain: argv.domain,
-// });
+process.on('SIGINT', () => {
+    process.exit();
+});
 
-// server.listen(argv.port, argv.address, () => {
-//     debug('server listening on port: %d', server.address().port);
-// });
+process.on('SIGTERM', () => {
+    process.exit();
+});
 
-// process.on('SIGINT', () => {
-//     process.exit();
-// });
+process.on('uncaughtException', (err) => {
+    log.error(err);
+});
 
-// process.on('SIGTERM', () => {
-//     process.exit();
-// });
-
-// process.on('uncaughtException', (err) => {
-//     log.error(err);
-// });
-
-// process.on('unhandledRejection', (reason, promise) => {
-//     log.error(reason);
-// });
-
-// vim: ft=javascript
-
+process.on('unhandledRejection', (reason, promise) => {
+    log.error(reason);
+});
