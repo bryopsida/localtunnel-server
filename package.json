@@ -13,7 +13,7 @@
     "human-readable-ids": "1.0.4",
     "koa": "2.15.2",
     "koa-router": "12.0.1",
-    "pino": "8.19.0",
+    "pino": "8.20.0",
     "pump": "3.0.0",
     "tldjs": "2.3.1"
   },
