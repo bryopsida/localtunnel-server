@@ -20,7 +20,7 @@
   "devDependencies": {
     "nodemon": "3.1.0",
     "standard": "17.1.0",
-    "supertest": "6.3.4",
+    "supertest": "7.0.0",
     "ws": "8.16.0"
   },
   "scripts": {
