@@ -1,4 +1,4 @@
-FROM node:lts-alpine as build-base
+FROM node:lts-alpine AS build-base
 RUN apk add --update --no-cache \
   python3 \
   make \
