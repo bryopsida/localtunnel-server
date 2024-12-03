@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "commander": "12.1.0",
-    "dotenv": "16.4.6",
+    "dotenv": "16.4.7",
     "human-readable-ids": "1.0.4",
     "koa": "2.15.3",
     "koa-router": "13.0.1",
