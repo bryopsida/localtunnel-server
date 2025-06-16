@@ -14,7 +14,7 @@
     "koa": "3.0.0",
     "koa-router": "13.0.1",
     "pino": "9.7.0",
-    "pump": "3.0.2",
+    "pump": "3.0.3",
     "tldjs": "2.3.1"
   },
   "devDependencies": {
