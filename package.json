@@ -12,7 +12,7 @@
     "dotenv": "17.2.1",
     "human-readable-ids": "1.0.4",
     "koa": "3.0.1",
-    "koa-router": "13.1.1",
+    "koa-router": "14.0.0",
     "pino": "9.7.0",
     "pump": "3.0.3",
     "tldjs": "2.3.2"
