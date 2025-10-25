@@ -8,7 +8,7 @@
     "url": "git://github.com/bryopsida/localtunnel-server.git"
   },
   "dependencies": {
-    "commander": "14.0.1",
+    "commander": "14.0.2",
     "dotenv": "17.2.3",
     "human-readable-ids": "1.0.4",
     "koa": "3.0.3",
