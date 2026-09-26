@@ -21,7 +21,7 @@
     "nodemon": "3.1.14",
     "standard": "17.1.2",
     "supertest": "7.3.0",
-    "ws": "8.21.3"
+    "ws": "8.22.0"
   },
   "scripts": {
     "test": "node --test *.test.js **/*.test.js",
